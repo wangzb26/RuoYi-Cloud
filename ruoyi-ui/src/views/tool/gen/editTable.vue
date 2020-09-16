@@ -90,6 +90,7 @@
                 <el-option label="单选框" value="radio" />
                 <el-option label="复选框" value="checkbox" />
                 <el-option label="日期控件" value="datetime" />
+                <el-option label="富文本控件" value="editor" />
               </el-select>
             </template>
           </el-table-column>
@@ -110,7 +111,7 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane label="生成信息" name="genInfo">
-        <gen-info-form ref="genInfo" :info="info" />
+        <gen-info-form ref="genInfo" :info="info" :menus="menus"/>
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
@@ -124,9 +125,11 @@
 <script>
 import { getGenTable, updateGenTable } from "@/api/tool/gen";
 import { optionselect as getDictOptionselect } from "@/api/system/dict/type";
+import { listMenu as getMenuTreeselect } from "@/api/system/menu";
 import basicInfoForm from "./basicInfoForm";
 import genInfoForm from "./genInfoForm";
 import Sortable from 'sortablejs'
+
 export default {
   name: "GenEdit",
   components: {
@@ -143,6 +146,8 @@ export default {
       cloumns: [],
       // 字典信息
       dictOptions: [],
+      // 菜单信息
+      menus: [],
       // 表详细信息
       info: {}
     };
@@ -159,6 +164,10 @@ export default {
       getDictOptionselect().then(response => {
         this.dictOptions = response.data;
       });
+      /** 查询菜单下拉列表 */
+      getMenuTreeselect().then(response => {
+        this.menus = this.handleTree(response.data, "menuId");
+      });
     }
   },
   methods: {
@@ -174,7 +183,8 @@ export default {
           genTable.params = {
             treeCode: genTable.treeCode,
             treeName: genTable.treeName,
-            treeParentCode: genTable.treeParentCode
+            treeParentCode: genTable.treeParentCode,
+            parentMenuId: genTable.parentMenuId
           };
           updateGenTable(genTable).then(res => {
             this.msgSuccess(res.msg);

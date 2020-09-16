@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.math.BigDecimal;
 
 /**
  * 自定义导出Excel数据注解
@@ -14,6 +15,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Excel
 {
+    /**
+     * 导出时在excel中排序
+     */
+    public int sort() default Integer.MAX_VALUE;
+
     /**
      * 导出到Excel中的名字.
      */
@@ -28,6 +34,21 @@ public @interface Excel
      * 读取内容转表达式 (如: 0=男,1=女,2=未知)
      */
     public String readConverterExp() default "";
+
+    /**
+     * 分隔符，读取字符串组内容
+     */
+    public String separator() default ",";
+
+    /**
+     * BigDecimal 精度 默认:-1(默认不开启BigDecimal格式化)
+     */
+    public int scale() default -1;
+
+    /**
+     * BigDecimal 舍入规则 默认:BigDecimal.ROUND_HALF_EVEN
+     */
+    public int roundingMode() default BigDecimal.ROUND_HALF_EVEN;
 
     /**
      * 导出类型（0数字 1字符串）
@@ -73,6 +94,11 @@ public @interface Excel
      * 另一个类中的属性名称,支持多级获取,以小数点隔开
      */
     public String targetAttr() default "";
+
+    /**
+     * 是否自动统计数据,在最后追加一行统计数据总和
+     */
+    public boolean isStatistics() default false;
 
     /**
      * 字段类型（0：导出导入；1：仅导出；2：仅导入）
